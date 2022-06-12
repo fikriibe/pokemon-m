@@ -1,4 +1,5 @@
 import {buildSlice} from '@thecodingmachine/redux-toolkit-wrapper';
+import endpoint from '../config/endpoint';
 import {DefaultItem, Pokemon} from '../types/api';
 import getListPokemon from './actions/getListPokemon';
 import getType from './actions/getType';
@@ -26,9 +27,9 @@ export interface Reducer extends ReducerState {
 const initialState = {
   pokemon: {
     data: [],
-    next: null,
+    next: endpoint.pokemon,
   },
-  type: [],
+  types: [],
 };
 
 export default buildSlice('store', [getListPokemon, getType], initialState)

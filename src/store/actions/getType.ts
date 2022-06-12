@@ -8,11 +8,13 @@ import {getListType} from '../../services/pokemon';
 export default {
   initialState: buildAsyncState('getListType'),
   action: buildAsyncActions(
-    'store/getTypeList',
+    'store/getListType',
     async (args: {}, {rejectWithValue}) => {
       try {
-        const {data} = await getListType();
-        return data;
+        const {
+          data: {results},
+        } = await getListType();
+        return results;
       } catch (e) {
         return rejectWithValue(e);
       }

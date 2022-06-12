@@ -7,12 +7,13 @@ export interface DefaultItem {
   url: string;
 }
 
+export interface PokemonAbility {
+  ability: DefaultItem;
+  is_hidden: boolean;
+  slot: number;
+}
 export interface Pokemon {
-  abilities: {
-    ability: DefaultItem;
-    is_hidden: boolean;
-    slot: number;
-  }[];
+  abilities: PokemonAbility[];
   base_experience: number;
   forms: DefaultItem[];
   game_indices: {
@@ -20,6 +21,7 @@ export interface Pokemon {
     version: DefaultItem;
   }[];
   height: number;
+  weight: number;
   held_items: any[];
   id: number;
   is_default: boolean;

@@ -24,7 +24,10 @@ const RootStack = createStackNavigator();
 export const navigationRef = createNavigationContainerRef<RootStackList>();
 
 export function push(name: keyof RootStackList, params?: Object | any) {
-  navigationRef.current?.dispatch(StackActions.push(name, params));
+  if (!navigationRef.isReady()) {
+    return;
+  }
+  return navigationRef?.dispatch(StackActions.push(name, params));
 }
 
 const App = () => {
@@ -39,7 +42,7 @@ const App = () => {
   return (
     <Provider store={store}>
       <SafeAreaView style={styles.wrap}>
-        <NavigationContainer>
+        <NavigationContainer ref={navigationRef}>
           <RootStack.Navigator screenOptions={{header: () => <Header />}}>
             <RootStack.Screen name="Home" component={Home} />
           </RootStack.Navigator>

@@ -6,16 +6,22 @@ import {
 import axiosClient from '../../services/axios-client';
 import {getListPokemon} from '../../services/pokemon';
 import {ApiRensponse, Pokemon} from '../../types/api';
+import {Reducer} from '../reducers';
 
 export default {
   initialState: buildAsyncState('getListPokemon'),
   action: buildAsyncActions(
     'store/getPokemonList',
-    async (args: {}, {rejectWithValue}) => {
+    async (args: {}, {rejectWithValue, getState}) => {
+      const {pokemon, ...other} = getState() as Reducer;
+      console.log(pokemon, other.getListPokemon);
+      if (!pokemon.next) {
+        throw new Error('No more pokemon');
+      }
       try {
         const {
           data: {results, next},
-        } = await getListPokemon();
+        } = await getListPokemon(pokemon.next);
         const dataPoke = await Promise.all(
           results.map(
             ({url}) =>
@@ -27,7 +33,7 @@ export default {
               ),
           ),
         );
-        return {data: dataPoke, next};
+        return {data: [...pokemon.data, ...dataPoke], next};
       } catch (e) {
         return rejectWithValue(e);
       }

@@ -1,16 +1,20 @@
-import React, {Fragment, useCallback, useEffect} from 'react';
+import React, {Fragment, useCallback, useEffect, useRef} from 'react';
 import {
   FlatList,
   Image,
   ImageBackground,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import images from '../../assets/images';
 import colors from '../../assets/themes/colors';
 import Button from '../../components/Button';
+import ModalPokemon, {
+  ModalPokemonHandle,
+} from '../../components/modal/ModalPokemon';
 import PillType from '../../components/PillType';
 import getListPokemon from '../../store/actions/getListPokemon';
 import getType from '../../store/actions/getType';
@@ -19,18 +23,41 @@ import {Pokemon} from '../../types/api';
 
 const Home = () => {
   const dispatch = useDispatch();
+  const flatListRef = useRef<FlatList<Pokemon>>(null);
+  const modalRef = useRef<ModalPokemonHandle>(null);
   const pokemons = useSelector(getPokemons);
   const loading = useSelector(getLoadingState('getListPokemon'));
-  useEffect(() => {
-    dispatch(getListPokemon.action());
-    dispatch(getType.action());
-  }, [dispatch]);
 
-  const renderItem = useCallback(props => <CardPokemon {...props} />, []);
+  const onLoadmore = useCallback(() => {
+    if (!loading) {
+      dispatch(getListPokemon.action());
+    }
+  }, [dispatch, loading]);
+
+  const onClickPoke = useCallback(() => {
+    flatListRef.current?.scrollToIndex({
+      index: 0,
+      animated: true,
+      viewPosition: 0.7,
+    });
+  }, []);
+
+  useEffect(() => {
+    onLoadmore();
+    dispatch(getType.action());
+  }, [dispatch, onLoadmore]);
+
+  const renderItem = useCallback(
+    (props: {item: Pokemon; index: number}) => (
+      <CardPokemon {...props} onPress={modalRef.current?.show} />
+    ),
+    [],
+  );
 
   return (
     <ImageBackground source={images.background} resizeMode="repeat">
       <FlatList
+        ref={flatListRef}
         ListHeaderComponent={
           <Fragment>
             <View style={styles.wrapHome}>
@@ -45,7 +72,7 @@ const Home = () => {
               <Text style={styles.desc}>
                 Thousands of data compiled into one place
               </Text>
-              <Button color={colors.yellow[700]} onPress={() => {}}>
+              <Button color={colors.yellow[700]} onPress={onClickPoke}>
                 Check PokèDex
               </Button>
             </View>
@@ -55,21 +82,39 @@ const Home = () => {
                 All Generation totaling 999999 Pokemon
               </Text>
             </View>
-            {loading && <Text style={styles.center}>Loading...</Text>}
           </Fragment>
         }
+        ListFooterComponent={
+          <Fragment>
+            {loading && (
+              <Text style={[styles.center, styles.descPoke]}>Loading...</Text>
+            )}
+          </Fragment>
+        }
+        onEndReached={onLoadmore}
+        onEndReachedThreshold={0.1}
         data={pokemons}
         renderItem={renderItem}
       />
+      <ModalPokemon ref={modalRef} />
     </ImageBackground>
   );
 };
 
-const CardPokemon: React.FC<{item: Pokemon; index: number}> = ({
-  item: {sprites, id, name, types},
-}) => {
+const CardPokemon: React.FC<{
+  item: Pokemon;
+  index: number;
+  onPress?: (id: number) => void;
+}> = ({item: {sprites, id, name, types}, onPress}) => {
+  const handleClick = useCallback(() => {
+    onPress?.(id);
+  }, [id, onPress]);
+
   return (
-    <View style={styles.wrapCard}>
+    <TouchableOpacity
+      style={styles.wrapCard}
+      activeOpacity={0.8}
+      onPress={handleClick}>
       <Image
         source={{uri: sprites.front_default || ''}}
         style={styles.imageCard}
@@ -81,7 +126,7 @@ const CardPokemon: React.FC<{item: Pokemon; index: number}> = ({
           <PillType type={type} style={styles.pill} />
         ))}
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 
