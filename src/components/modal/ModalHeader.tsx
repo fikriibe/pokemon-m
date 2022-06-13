@@ -1,10 +1,10 @@
-import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {forwardRef, useCallback, useImperativeHandle} from 'react';
-import {useToggle} from '../../hooks';
+import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import Modal from 'react-native-modal';
+import {navigate} from '../../App';
 import colors from '../../assets/themes/colors';
+import {useToggle} from '../../hooks';
 import Header from '../Header';
-import {push} from '../../App';
 
 interface MenuItemData {
   label: string;
@@ -69,7 +69,7 @@ const ModalHeader = forwardRef<ModalHeaderHandle, {}>((_, ref) => {
           data={[
             {
               label: 'Home',
-              onPress: handlePress(() => push('Home')),
+              onPress: handlePress(() => navigate('Home')),
             },
           ]}
           renderItem={rendermenuItem}

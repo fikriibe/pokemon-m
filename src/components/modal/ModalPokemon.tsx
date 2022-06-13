@@ -1,20 +1,18 @@
-import {Image, ScrollView, StyleSheet, Text, View} from 'react-native';
 import React, {
   forwardRef,
-  ReactNode,
   useCallback,
   useImperativeHandle,
   useState,
 } from 'react';
-import {useToggle} from '../../hooks';
+import {Image, ScrollView, StyleSheet, Text, View} from 'react-native';
 import Modal from 'react-native-modal';
-import {getPokemon} from '../../store/selectors';
 import {useSelector} from 'react-redux';
-import colors from '../../assets/themes/colors';
-import Button from '../Button';
 import {push} from '../../App';
-import {PokemonAbility} from '../../types/api';
-import PillType from '../PillType';
+import colors from '../../assets/themes/colors';
+import {useToggle} from '../../hooks';
+import {getPokemon} from '../../store/selectors';
+import Button from '../Button';
+import RowDetailPokemon from '../RowDetailPokemon';
 
 export type ModalPokemonHandle = {
   show: (id: number) => void;
@@ -34,7 +32,10 @@ const ModalPokemon = forwardRef((_, ref) => {
     [showModal],
   );
 
-  const onClickMore = useCallback(() => push('Detail', {id}), [id]);
+  const onClickMore = useCallback(() => {
+    dismiss();
+    push('Detail', {id});
+  }, [dismiss, id]);
 
   useImperativeHandle(
     ref,
@@ -43,19 +44,6 @@ const ModalPokemon = forwardRef((_, ref) => {
       dismiss,
     }),
     [dismiss, show],
-  );
-
-  const renderItemAbilities = useCallback(
-    ({ability: {name}, is_hidden}: PokemonAbility) => (
-      <View style={styles.rowAbility} key={name}>
-        <View style={styles.dotAbility} />
-        <Text style={styles.val}>
-          {name}
-          {is_hidden && ' (hidden)'}
-        </Text>
-      </View>
-    ),
-    [],
   );
 
   return (
@@ -75,22 +63,7 @@ const ModalPokemon = forwardRef((_, ref) => {
               source={{uri: pokemon?.sprites.front_default ?? ''}}
               style={styles.image}
             />
-            <RenderRow title="Weight" value={String(pokemon?.weight)} />
-            <RenderRow title="Height" value={String(pokemon?.height)} />
-            <RenderRow
-              title="Abilities"
-              value={<View>{pokemon?.abilities.map(renderItemAbilities)}</View>}
-            />
-            <RenderRow
-              title="Type"
-              value={
-                <View style={styles.rowType}>
-                  {pokemon?.types.map(({type}) => (
-                    <PillType key={type.name} type={type} />
-                  ))}
-                </View>
-              }
-            />
+            <RowDetailPokemon pokemon={pokemon} />
             <Button color={colors.yellow[700]} onPress={onClickMore}>
               More Detail
             </Button>
@@ -100,24 +73,6 @@ const ModalPokemon = forwardRef((_, ref) => {
     </Modal>
   );
 });
-
-const RenderRow: React.FC<{title: string; value: string | ReactNode}> = ({
-  title,
-  value,
-}) => {
-  return (
-    <View style={styles.row}>
-      <Text style={styles.titleRow}>{title}: </Text>
-      <View>
-        {typeof value === 'string' ? (
-          <Text style={styles.val}>{value}</Text>
-        ) : (
-          value
-        )}
-      </View>
-    </View>
-  );
-};
 
 export default ModalPokemon;
 
@@ -157,34 +112,6 @@ const styles = StyleSheet.create({
     width: 250,
     aspectRatio: 1,
     marginBottom: 30,
+    backgroundColor: colors.neutral[200],
   },
-  row: {
-    flexDirection: 'row',
-    width: '100%',
-    marginBottom: 20,
-  },
-  titleRow: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: colors.neutral[700],
-    marginRight: 10,
-  },
-  val: {
-    fontSize: 16,
-    color: colors.neutral[600],
-    textTransform: 'capitalize',
-  },
-  rowAbility: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  dotAbility: {
-    width: 3,
-    aspectRatio: 1,
-    borderRadius: 3,
-    marginRight: 5,
-    backgroundColor: colors.neutral[600],
-  },
-  rowType: {flexDirection: 'row', flexWrap: 'wrap', marginBottom: 40},
 });

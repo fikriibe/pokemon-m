@@ -15,7 +15,6 @@ const useToggle: (
   }, []);
 
   const dismissModal = React.useCallback(() => {
-    console.log('close');
     setVisible(false);
   }, []);
 

@@ -43,9 +43,9 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
-    onLoadmore();
+    dispatch(getListPokemon.action());
     dispatch(getType.action());
-  }, [dispatch, onLoadmore]);
+  }, [dispatch]);
 
   const renderItem = useCallback(
     (props: {item: Pokemon; index: number}) => (
@@ -123,7 +123,7 @@ const CardPokemon: React.FC<{
       <Text style={styles.nameCard}>{name}</Text>
       <View style={styles.wrapTypeCard}>
         {types.map(({type}) => (
-          <PillType type={type} style={styles.pill} />
+          <PillType key={type.name} type={type} style={styles.pill} />
         ))}
       </View>
     </TouchableOpacity>
@@ -186,6 +186,7 @@ const styles = StyleSheet.create({
     minWidth: 200,
     aspectRatio: 1,
     marginBottom: 10,
+    backgroundColor: colors.neutral[200],
   },
   idCard: {
     color: colors.neutral[400],

@@ -1,13 +1,15 @@
 import {buildSlice} from '@thecodingmachine/redux-toolkit-wrapper';
 import endpoint from '../config/endpoint';
 import {DefaultItem, Pokemon} from '../types/api';
+import getDataFromUrl from './actions/getDataFromUrl';
 import getListPokemon from './actions/getListPokemon';
 import getType from './actions/getType';
 
 export type StateReducer =
   | 'getListPokemon'
   | 'getDetailPokemon'
-  | 'getListType';
+  | 'getListType'
+  | 'getDataFromUrl';
 
 type ReducerState = {
   [key in StateReducer]?: {
@@ -32,5 +34,8 @@ const initialState = {
   types: [],
 };
 
-export default buildSlice('store', [getListPokemon, getType], initialState)
-  .reducer;
+export default buildSlice(
+  'store',
+  [getListPokemon, getType, getDataFromUrl],
+  initialState,
+).reducer;

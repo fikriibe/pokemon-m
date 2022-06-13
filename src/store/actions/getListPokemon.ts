@@ -3,6 +3,7 @@ import {
   buildAsyncReducers,
   buildAsyncState,
 } from '@thecodingmachine/redux-toolkit-wrapper';
+import {BASE_URL} from '../../config/endpoint';
 import axiosClient from '../../services/axios-client';
 import {getListPokemon} from '../../services/pokemon';
 import {ApiRensponse, Pokemon} from '../../types/api';
@@ -13,8 +14,7 @@ export default {
   action: buildAsyncActions(
     'store/getPokemonList',
     async (args: {}, {rejectWithValue, getState}) => {
-      const {pokemon, ...other} = getState() as Reducer;
-      console.log(pokemon, other.getListPokemon);
+      const {pokemon} = getState() as Reducer;
       if (!pokemon.next) {
         throw new Error('No more pokemon');
       }
@@ -33,7 +33,10 @@ export default {
               ),
           ),
         );
-        return {data: [...pokemon.data, ...dataPoke], next};
+        return {
+          data: [...pokemon.data, ...dataPoke],
+          next: next?.replace(BASE_URL, ''),
+        };
       } catch (e) {
         return rejectWithValue(e);
       }

@@ -12,6 +12,12 @@ export interface PokemonAbility {
   is_hidden: boolean;
   slot: number;
 }
+
+export interface PokemonStats {
+  base_stat: number;
+  effort: number;
+  stat: DefaultItem;
+}
 export interface Pokemon {
   abilities: PokemonAbility[];
   base_experience: number;
@@ -43,6 +49,7 @@ export interface Pokemon {
     front_shiny: string | null;
     front_shiny_female: string | null;
   };
+  stats: PokemonStats[];
 }
 
 export interface ListResponse<D = DefaultItem> {
