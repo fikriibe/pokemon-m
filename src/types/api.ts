@@ -2,10 +2,31 @@ export interface ApiRensponse<D> {
   data: D;
 }
 
-export interface DefaultItem {
-  name: string;
+export interface DefaultItem<T = string> {
+  name: T;
   url: string;
 }
+
+export type TypePokemon =
+  | 'normal'
+  | 'fighting'
+  | 'flying'
+  | 'poison'
+  | 'ground'
+  | 'rock'
+  | 'bug'
+  | 'ghost'
+  | 'steel'
+  | 'fire'
+  | 'water'
+  | 'grass'
+  | 'electric'
+  | 'psychic'
+  | 'ice'
+  | 'dragon'
+  | 'dark'
+  | 'fairy'
+  | 'unknown';
 
 export interface PokemonAbility {
   ability: DefaultItem;
@@ -37,7 +58,7 @@ export interface Pokemon {
   order: number;
   types: {
     slot: number;
-    type: DefaultItem;
+    type: DefaultItem<TypePokemon>;
   }[];
   sprites: {
     back_default: string | null;

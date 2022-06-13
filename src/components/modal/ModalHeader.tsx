@@ -1,9 +1,17 @@
-import React, {forwardRef, useCallback, useImperativeHandle} from 'react';
+import React, {
+  forwardRef,
+  Fragment,
+  useCallback,
+  useImperativeHandle,
+  useMemo,
+} from 'react';
 import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import Modal from 'react-native-modal';
-import {navigate} from '../../App';
+import {useSelector} from 'react-redux';
+import {navigate, push} from '../../App';
 import colors from '../../assets/themes/colors';
 import {useToggle} from '../../hooks';
+import {getType} from '../../store/selectors';
 import Header from '../Header';
 
 interface MenuItemData {
@@ -18,22 +26,47 @@ export type ModalHeaderHandle = {
 };
 
 const MenuItem: React.FC<{item: MenuItemData; index: number}> = ({
-  item: {label, onPress},
+  item: {label, onPress, child},
   index,
 }) => {
+  const [visible, show, hide] = useToggle();
+
+  const handleClick = useCallback(() => {
+    if (child) {
+      if (visible) {
+        hide();
+        return;
+      }
+      show();
+      return;
+    }
+    onPress?.();
+  }, [child, hide, onPress, show, visible]);
+
   return (
-    <TouchableOpacity
-      onPress={onPress}
-      style={[styles.wrapMenuItem, index ? styles.wrapMenuItemBorder : null]}>
-      <Text style={styles.textItem}>{label}</Text>
-    </TouchableOpacity>
+    <Fragment>
+      <TouchableOpacity
+        activeOpacity={0.9}
+        onPress={handleClick}
+        style={[styles.wrapMenuItem, index ? styles.wrapMenuItemBorder : null]}>
+        <Text style={styles.textItem}>{label}</Text>
+      </TouchableOpacity>
+      {child && visible && (
+        <FlatList
+          style={styles.childMenu}
+          data={child}
+          renderItem={rendermenuItem}
+        />
+      )}
+    </Fragment>
   );
 };
 
+const rendermenuItem = (props: any) => <MenuItem {...props} />;
+
 const ModalHeader = forwardRef<ModalHeaderHandle, {}>((_, ref) => {
   const [visible, show, dismiss] = useToggle();
-
-  const rendermenuItem = useCallback(props => <MenuItem {...props} />, []);
+  const types = useSelector(getType);
 
   const handlePress = useCallback(
     (func: () => void) => () => {
@@ -51,6 +84,22 @@ const ModalHeader = forwardRef<ModalHeaderHandle, {}>((_, ref) => {
     }),
     [dismiss, show],
   );
+  const dataMenu = useMemo(
+    () => [
+      {
+        label: 'Home',
+        onPress: handlePress(() => navigate('Home')),
+      },
+      {
+        label: 'Pokemon Type',
+        child: types.map(type => ({
+          label: type.name,
+          onPress: handlePress(() => push('Type', {data: type})),
+        })),
+      },
+    ],
+    [handlePress, types],
+  );
 
   return (
     <Modal
@@ -66,12 +115,7 @@ const ModalHeader = forwardRef<ModalHeaderHandle, {}>((_, ref) => {
         </View>
         <FlatList
           style={styles.wrapMenu}
-          data={[
-            {
-              label: 'Home',
-              onPress: handlePress(() => navigate('Home')),
-            },
-          ]}
+          data={dataMenu}
           renderItem={rendermenuItem}
         />
       </View>
@@ -85,18 +129,21 @@ const styles = StyleSheet.create({
   modal: {margin: 0, justifyContent: 'flex-start', height: 100},
   wrapModal: {
     backgroundColor: colors.grey[50],
+    maxHeight: '60%',
   },
   wrapMenuItemBorder: {
     borderTopWidth: 1,
-    borderBottomColor: colors.grey[200],
+    borderTopColor: colors.neutral[300],
   },
   wrapMenuItem: {
-    height: 24,
+    height: 36,
+    paddingTop: 12,
     marginBottom: 12,
   },
   textItem: {
     color: colors.neutral[700],
     fontSize: 16,
+    textTransform: 'capitalize',
   },
   wrapMenu: {
     marginVertical: 28,
@@ -104,5 +151,10 @@ const styles = StyleSheet.create({
   },
   header: {
     marginTop: 20,
+  },
+  childMenu: {
+    marginLeft: 12,
+    borderTopWidth: 1,
+    borderTopColor: colors.neutral[300],
   },
 });

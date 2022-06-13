@@ -11,13 +11,15 @@ import Header from './components/Header';
 import ModalHeader, {ModalHeaderHandle} from './components/modal/ModalHeader';
 import Detail from './containers/pages/Detail';
 import Home from './containers/pages/Home';
+import TypePage from './containers/pages/TypePage';
 import {store} from './store';
+import {DefaultItem, TypePokemon} from './types/api';
 import {setModalHeader} from './utils/globalRef';
 
 export type RootStackList = {
   Home: undefined;
   Detail: {id: number};
-  Type: undefined;
+  Type: {data: DefaultItem<TypePokemon>};
 };
 
 const RootStack = createStackNavigator();
@@ -54,6 +56,7 @@ const App = () => {
           <RootStack.Navigator screenOptions={{header: () => <Header />}}>
             <RootStack.Screen name="Home" component={Home} />
             <RootStack.Screen name="Detail" component={Detail} />
+            <RootStack.Screen name="Type" component={TypePage} />
           </RootStack.Navigator>
         </NavigationContainer>
         <ModalHeader ref={modalHeaderRef} />

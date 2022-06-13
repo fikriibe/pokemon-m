@@ -20,6 +20,7 @@ import getListPokemon from '../../store/actions/getListPokemon';
 import getType from '../../store/actions/getType';
 import {getLoadingState, getPokemons} from '../../store/selectors';
 import {Pokemon} from '../../types/api';
+import {generateDigit} from '../../utils/generateColors';
 
 const Home = () => {
   const dispatch = useDispatch();
@@ -119,7 +120,7 @@ const CardPokemon: React.FC<{
         source={{uri: sprites.front_default || ''}}
         style={styles.imageCard}
       />
-      <Text style={styles.idCard}>#{id}</Text>
+      <Text style={styles.idCard}>#{generateDigit(id)}</Text>
       <Text style={styles.nameCard}>{name}</Text>
       <View style={styles.wrapTypeCard}>
         {types.map(({type}) => (

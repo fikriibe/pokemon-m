@@ -1,10 +1,14 @@
 import React from 'react';
+import {Dimensions} from 'react-native';
 import Svg, {Path} from 'react-native-svg';
-import {IconType} from '../../types/components';
 
-const BgTypes: React.FC<IconType> = ({fill}) => {
+const BgTypes: React.FC<{fill?: string; width?: number}> = ({fill, width}) => {
   return (
-    <Svg width="360" height="601" viewBox="0 0 360 601" fill="none">
+    <Svg
+      width={width}
+      height={((width || Dimensions.get('window').width) * 601) / 360}
+      viewBox="0 0 360 601"
+      fill="none">
       <Path
         d="M359.917 35C304.182 35 259 78.5959 259 132.374C259 186.152 304.182 229.748 359.917 229.748"
         stroke={fill}
@@ -23,6 +27,7 @@ const BgTypes: React.FC<IconType> = ({fill}) => {
 
 BgTypes.defaultProps = {
   fill: '#0571A6',
+  width: Dimensions.get('window').width,
 };
 
 export default BgTypes;

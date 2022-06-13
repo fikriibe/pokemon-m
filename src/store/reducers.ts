@@ -4,6 +4,7 @@ import {DefaultItem, Pokemon} from '../types/api';
 import getDataFromUrl from './actions/getDataFromUrl';
 import getListPokemon from './actions/getListPokemon';
 import getType from './actions/getType';
+import setPokemonList from './actions/setPokemonList';
 
 export type StateReducer =
   | 'getListPokemon'
@@ -36,6 +37,6 @@ const initialState = {
 
 export default buildSlice(
   'store',
-  [getListPokemon, getType, getDataFromUrl],
+  [getListPokemon, getType, getDataFromUrl, setPokemonList],
   initialState,
 ).reducer;

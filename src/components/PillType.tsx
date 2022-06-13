@@ -1,17 +1,19 @@
-import React, {useMemo} from 'react';
+import React from 'react';
 import {StyleSheet, Text, View, ViewProps} from 'react-native';
-import colors from '../assets/themes/colors';
-import {DefaultItem} from '../types/api';
+import {DefaultItem, TypePokemon} from '../types/api';
+import {generateColorsType} from '../utils/generateColors';
 
-const PillType: React.FC<ViewProps & {type: DefaultItem}> = ({type, style}) => {
-  const backgroundColor = useMemo(() => {
-    switch (type) {
-      default:
-        return colors.neutral[600];
-    }
-  }, [type]);
+const PillType: React.FC<ViewProps & {type: DefaultItem<TypePokemon>}> = ({
+  type,
+  style,
+}) => {
   return (
-    <View style={[styles.wrap, style, {backgroundColor}]}>
+    <View
+      style={[
+        styles.wrap,
+        style,
+        {backgroundColor: generateColorsType(type.name)},
+      ]}>
       <Text style={styles.text}>{type.name}</Text>
     </View>
   );

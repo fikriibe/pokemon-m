@@ -5,6 +5,9 @@ export const getPokemons = (state: Reducer) => state.pokemon.data;
 export const getPokemon = (id: number) => (state: Reducer) =>
   state.pokemon.data.find(pokemon => pokemon.id === id);
 
+export const getPokemonByName = (name: string) => (state: Reducer) =>
+  state.pokemon.data.find(pokemon => pokemon.name === name);
+
 export const getLoadingState = (key: StateReducer) => (state: Reducer) =>
   state[key]?.loading ?? false;
 
